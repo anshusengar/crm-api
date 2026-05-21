@@ -10,22 +10,17 @@ use Illuminate\Support\Facades\Auth;
 
 class AIController extends Controller
 {
-   public function summarizeNote(Request $request)
+  public function summarizeNote(Request $request)
 {
-    $client = OpenAI::client(env('OPENAI_API_KEY'));
-
-    $response = $client->chat()->create([
-        'model' => 'gpt-4.1-mini',
-        'messages' => [
-            ['role' => 'user', 'content' => "Summarize this note: ".$request->content],
-        ],
+    $request->validate([
+        'content' => 'required|string'
     ]);
 
-    $result = $response->choices[0]->message->content;
+    // 🔥 STATIC RESPONSE (for demo)
+    $result = "Client is interested, requested discount, and wants a demo next week";
 
-    // ✅ SAVE AI LOG HERE
-    AiLog::create([
-        'user_id' => Auth::id(),
+    \App\Models\AiLog::create([
+        'user_id' => \Illuminate\Support\Facades\Auth::id() ?? 1,
         'prompt' => $request->content,
         'response' => $result
     ]);
